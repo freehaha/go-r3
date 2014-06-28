@@ -51,11 +51,11 @@ type Tree Node
 type Router Node
 
 // Create a new Tree
-func NewTree(capacity int) (*Tree, error) {
+func NewTree(capacity int) *Tree {
 	var n *C.node
 	n = C.r3_tree_create(C.int(capacity))
 	t := &Tree{n}
-	return t, nil
+	return t
 }
 
 // Insert route with method and arbitary data
