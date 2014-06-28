@@ -11,6 +11,10 @@ void * getData(route *r) {
 	return r->data;
 }
 
+void * getNodeData(node *n) {
+	return n->data;
+}
+
 int getVarsLength(match_entry *e) {
 	return e->vars->len;
 }
@@ -21,6 +25,10 @@ int getRequestMethod(match_entry *e) {
 
 const char* getVar(match_entry *e, int i) {
 	return e->vars->tokens[i];
+}
+
+node * treeMatchEntry(node* tree, match_entry* entry) {
+	return r3_tree_matchl(tree, entry->path, entry->path_len, entry);
 }
 */
 import "C"
@@ -48,7 +56,12 @@ type Data struct {
 }
 
 type Tree Node
-type Router Node
+
+func (n *Node) Data() interface{} {
+	var p *Data
+	p = (*Data)(C.getNodeData(n.node))
+	return p.Value
+}
 
 // Create a new Tree
 func NewTree(capacity int) *Tree {
@@ -96,6 +109,17 @@ func (n *Tree) MatchRoute(e *MatchEntry) *Route {
 	}
 	return &Route{
 		route: r,
+	}
+}
+
+// Match a MatchEntry, returns a Node object if found, nil otherwise
+func (n *Tree) MatchNode(e *MatchEntry) *Node {
+	ret := C.treeMatchEntry(n.node, e.entry)
+	if ret == nil {
+		return nil
+	}
+	return &Node{
+		node: ret,
 	}
 }
 
