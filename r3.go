@@ -157,13 +157,13 @@ func (e *MatchEntry) SetRequestMethod(m Method) {
 }
 
 // Get tokens in the path
-func (e *MatchEntry) Vars() *[]string {
+func (e *MatchEntry) Vars() []string {
 	var length int = int(C.getVarsLength(e.entry))
 	var tokens []string = make([]string, length)
 	for i := 0; i < length; i++ {
 		tokens[i] = C.GoString(C.getVar(e.entry, C.int(i)))
 	}
-	return &tokens
+	return tokens
 }
 
 // Free memory
