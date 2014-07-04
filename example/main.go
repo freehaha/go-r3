@@ -1,16 +1,3 @@
-go-r3
-=====
-
-c9s/r3 binding for Go using cgo and a simple Mux implementation based on it
-
-Router
-======
-
-This example can be found in example/, note that the Compile() MUST be called
-before serving for the router to work correctly.
-
-
-```go
 package main
 
 import (
@@ -56,4 +43,3 @@ func main() {
 		log.Printf("%s", err.Error())
 	}
 }
-```
