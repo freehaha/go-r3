@@ -3,7 +3,6 @@ package mux
 import (
 	"github.com/freehaha/go-r3"
 	"github.com/gorilla/context"
-	"log"
 	"net/http"
 	"runtime"
 )
@@ -11,6 +10,10 @@ import (
 type Router struct {
 	tree            *r3.Tree
 	NotFoundHandler http.Handler
+}
+
+type NegroniRouter struct {
+	Router
 }
 
 var methods map[string]r3.Method = map[string]r3.Method{
@@ -31,7 +34,10 @@ func NewRouter() *Router {
 }
 
 func finalizeRouter(r *Router) {
-	log.Print("finalizing router")
+	r.tree.Free()
+}
+
+func finalizeNRouter(r *NegroniRouter) {
 	r.tree.Free()
 }
 
@@ -62,8 +68,6 @@ func (r *Router) Handle(method r3.Method, path string, handler http.Handler) {
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	ent := r3.NewMatchEntry(req.URL.Path)
 	ent.SetRequestMethod(methods[req.Method])
-	log.Print(req.URL.Path)
-	log.Print(req.Method)
 	defer ent.Free()
 	route := r.tree.MatchRoute(ent)
 	if route != nil {
@@ -76,5 +80,30 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			handler = http.NotFoundHandler()
 		}
 		handler.ServeHTTP(w, req)
+	}
+}
+
+func NewNegroniRouter() *NegroniRouter {
+	r := &NegroniRouter{
+		Router{},
+	}
+	r.tree = r3.NewTree(10)
+	runtime.SetFinalizer(r, finalizeNRouter)
+	return r
+}
+
+/* implement negroni middleware */
+func (r *NegroniRouter) ServeHTTP(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+	ent := r3.NewMatchEntry(req.URL.Path)
+	ent.SetRequestMethod(methods[req.Method])
+	defer ent.Free()
+	route := r.tree.MatchRoute(ent)
+	if route != nil {
+		context.Set(req, "vars", ent.Vars())
+		handler := route.Data().(http.Handler)
+		handler.ServeHTTP(w, req)
+	} else {
+		/* skip to next middleware */
+		next(w, req)
 	}
 }
