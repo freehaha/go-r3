@@ -1,4 +1,4 @@
-package router
+package mux
 
 import (
 	"github.com/freehaha/go-r3"

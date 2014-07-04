@@ -23,7 +23,7 @@ import (
 
 func main() {
 	/* instanciate router */
-	r := router.NewRouter()
+	r := mux.NewRouter()
 	/* optional, it should be GCed automatically */
 	defer r.Free()
 
@@ -38,12 +38,12 @@ func main() {
 
 	/* path with parameters */
 	r.HandleFunc(r3.MethodGet, "/path/{id}", func(w http.ResponseWriter, req *http.Request) {
-		vars := router.Vars(req)
+		vars := mux.Vars(req)
 		fmt.Fprintf(w, "path, args: %s", vars)
 	})
 
 	r.HandleFunc(r3.MethodGet, "/path/{id}/{arg2}", func(w http.ResponseWriter, req *http.Request) {
-		vars := router.Vars(req)
+		vars := mux.Vars(req)
 		fmt.Fprintf(w, "path, args: %s", vars)
 	})
 
