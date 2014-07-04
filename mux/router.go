@@ -43,6 +43,10 @@ func (r *Router) Free() {
 	finalizeRouter(r)
 }
 
+func Vars(r *http.Request) []string {
+	return context.Get(r, "vars").([]string)
+}
+
 /* insert a path to the router with specific handler */
 func (r *Router) HandleFunc(method r3.Method, path string, handler http.HandlerFunc) {
 	r.tree.InsertRoute(method, path, handler)
