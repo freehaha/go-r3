@@ -45,12 +45,15 @@ var (
 	MethodPatch   Method = C.METHOD_PATCH
 	MethodHead    Method = C.METHOD_HEAD
 	MethodOptions Method = C.METHOD_OPTIONS
+	MethodAll     Method = C.METHOD_GET | C.METHOD_POST | C.METHOD_PUT | C.METHOD_DELETE | C.METHOD_PATCH | C.METHOD_HEAD | C.METHOD_OPTIONS
 )
 
 type Method int
 type Node struct {
-	node *C.node
+	node  *C.node
+	datas []interface{}
 }
+
 type Data struct {
 	Value interface{}
 }
@@ -67,7 +70,10 @@ func (n *Node) Data() interface{} {
 func NewTree(capacity int) *Tree {
 	var n *C.node
 	n = C.r3_tree_create(C.int(capacity))
-	t := &Tree{n}
+	t := &Tree{
+		node:  n,
+		datas: make([]interface{}, 0, 10),
+	}
 	return t
 }
 
@@ -77,6 +83,8 @@ func (n *Tree) InsertRoute(m Method, path string, data interface{}) {
 		Value: data,
 	}
 	p := C.CString(path)
+	/* hold reference to d so that it's not GCed */
+	n.datas = append(n.datas, d)
 	C.r3_tree_insert_routel(n.node, C.int(m), p, C.int(C.strlen(p)), unsafe.Pointer(d))
 }
 
@@ -85,6 +93,8 @@ func (n *Tree) InsertPath(path string, data interface{}) {
 	d := &Data{
 		Value: data,
 	}
+	/* hold reference to d so that it's not GCed */
+	n.datas = append(n.datas, d)
 	p := C.CString(path)
 	C.r3_tree_insert_pathl(n.node, p, C.int(C.strlen(p)), unsafe.Pointer(d))
 }
@@ -127,6 +137,7 @@ func (n *Tree) MatchNode(e *MatchEntry) *Node {
 func (n *Tree) Free() {
 	C.r3_tree_free(n.node)
 	n.node = nil
+	n.datas = nil
 }
 
 // Dump tree to stdout

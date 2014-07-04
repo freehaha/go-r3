@@ -47,9 +47,15 @@ func Vars(r *http.Request) []string {
 	return context.Get(r, "vars").([]string)
 }
 
-/* insert a path to the router with specific handler */
+/* insert a path to the router with specific handlerfunc */
 func (r *Router) HandleFunc(method r3.Method, path string, handler http.HandlerFunc) {
+	r.Handle(method, path, http.HandlerFunc(handler))
+}
+
+/* insert a path to the router with specific handler */
+func (r *Router) Handle(method r3.Method, path string, handler http.Handler) {
 	r.tree.InsertRoute(method, path, handler)
+	/* keep a reference on it so it doens't get GCed */
 }
 
 /* implement Mux */
@@ -62,8 +68,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	route := r.tree.MatchRoute(ent)
 	if route != nil {
 		context.Set(req, "vars", ent.Vars())
-		handler := route.Data().(http.HandlerFunc)
-		handler(w, req)
+		handler := route.Data().(http.Handler)
+		handler.ServeHTTP(w, req)
 	} else {
 		handler := r.NotFoundHandler
 		if handler == nil {
