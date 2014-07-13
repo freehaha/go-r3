@@ -5,7 +5,6 @@ package r3
 #cgo LDFLAGS: -lr3
 
 #include <r3/r3.h>
-#include <stdlib.h>
 
 void * getData(route *r) {
 	return r->data;
