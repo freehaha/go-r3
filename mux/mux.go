@@ -80,6 +80,10 @@ func (r *Router) Options(path string, handler http.HandlerFunc) {
 }
 
 func Vars(r *http.Request) []string {
+	data := context.Get(r, "vars")
+	if data == nil {
+		return nil
+	}
 	return context.Get(r, "vars").([]string)
 }
 
