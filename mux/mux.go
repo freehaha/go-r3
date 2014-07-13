@@ -49,6 +49,36 @@ func (r *Router) Free() {
 	finalizeRouter(r)
 }
 
+/* Helper function for HandleFunc(r3.MethodGet, path, handler) */
+func (r *Router) Get(path string, handler http.HandlerFunc) {
+	r.HandleFunc(r3.MethodGet, path, handler)
+}
+
+/* Helper function for HandleFunc(r3.MethodPost, path, handler) */
+func (r *Router) Post(path string, handler http.HandlerFunc) {
+	r.HandleFunc(r3.MethodPost, path, handler)
+}
+
+/* Helper function for HandleFunc(r3.MethodPut, path, handler) */
+func (r *Router) Put(path string, handler http.HandlerFunc) {
+	r.HandleFunc(r3.MethodPut, path, handler)
+}
+
+/* Helper function for HandleFunc(r3.MethodPatch, path, handler) */
+func (r *Router) Patch(path string, handler http.HandlerFunc) {
+	r.HandleFunc(r3.MethodPatch, path, handler)
+}
+
+/* Helper function for HandleFunc(r3.MethodDelete, path, handler) */
+func (r *Router) Delete(path string, handler http.HandlerFunc) {
+	r.HandleFunc(r3.MethodDelete, path, handler)
+}
+
+/* Helper function for HandleFunc(r3.MethodOptions, path, handler) */
+func (r *Router) Options(path string, handler http.HandlerFunc) {
+	r.HandleFunc(r3.MethodOptions, path, handler)
+}
+
 func Vars(r *http.Request) []string {
 	return context.Get(r, "vars").([]string)
 }
