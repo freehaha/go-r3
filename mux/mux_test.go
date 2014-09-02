@@ -115,25 +115,25 @@ func TestPathVars(t *testing.T) {
 	defer router.Free()
 
 	router.Get("/foo/{id}", func(w http.ResponseWriter, req *http.Request) {
-		writeSuccess(w, "get pathtest")
+		writeSuccess(w, "get pathtest1")
 	})
 
-	router.Get("/foo/{var1}/{var2}", func(w http.ResponseWriter, req *http.Request) {
+	router.Get("/foo/{id}/{var2}", func(w http.ResponseWriter, req *http.Request) {
 		writeSuccess(w, "get pathtest2")
 	})
 	router.Compile()
 
-	req, _ = requestAndCheck(t, router, "GET", "/foo/teststr", "get pathtest")
+	req, _ = requestAndCheck(t, router, "GET", "/foo/teststr", "get pathtest1")
 	if Vars(req)[0] != "teststr" {
 		t.Errorf("should set correct var = 'teststr', got: %s", Vars(req)[0])
 	}
 
-	req, _ = requestAndCheck(t, router, "GET", "/foo/anothervar", "get pathtest")
+	req, _ = requestAndCheck(t, router, "GET", "/foo/anothervar", "get pathtest1")
 	if Vars(req)[0] != "anothervar" {
 		t.Errorf("should set correct var = 'anothervar', got: %s", Vars(req)[0])
 	}
 
-	req, _ = requestAndCheck(t, router, "GET", "/foo/pvar1/pvar2", "get pathtest")
+	req, _ = requestAndCheck(t, router, "GET", "/foo/pvar1/pvar2", "get pathtest2")
 	vars := Vars(req)
 	if vars == nil {
 		t.Fail()
@@ -142,7 +142,7 @@ func TestPathVars(t *testing.T) {
 		t.Errorf("should set correct var = [ \"pvar1\", \"pvar2\" ], got: %s", vars)
 	}
 
-	req, _ = requestAndCheck(t, router, "GET", "/foo/pvar3/pvar4", "get pathtest")
+	req, _ = requestAndCheck(t, router, "GET", "/foo/pvar3/pvar4", "get pathtest2")
 	vars = Vars(req)
 	if vars == nil {
 		t.Fail()
