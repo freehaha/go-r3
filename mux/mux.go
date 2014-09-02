@@ -108,6 +108,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		context.Set(req, "vars", ent.Vars())
 		handler := route.Data().(http.Handler)
 		handler.ServeHTTP(w, req)
+		context.Clear(req)
 	} else {
 		handler := r.NotFoundHandler
 		if handler == nil {
@@ -136,6 +137,7 @@ func (r *NegroniRouter) ServeHTTP(w http.ResponseWriter, req *http.Request, next
 		context.Set(req, "vars", ent.Vars())
 		handler := route.Data().(http.Handler)
 		handler.ServeHTTP(w, req)
+		context.Clear(req)
 	} else {
 		/* skip to next middleware */
 		next(w, req)
