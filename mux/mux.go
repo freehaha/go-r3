@@ -79,6 +79,7 @@ func (r *Router) Options(path string, handler http.HandlerFunc) {
 	r.HandleFunc(r3.MethodOptions, path, handler)
 }
 
+/* returns the variables captured by the placeholders. */
 func Vars(r *http.Request) []string {
 	data := context.Get(r, "vars")
 	if data == nil {
